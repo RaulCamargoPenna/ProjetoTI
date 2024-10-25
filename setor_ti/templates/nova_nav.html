@@ -1,0 +1,220 @@
+{% load static %} {% if user.is_authenticated %}
+<style>
+  .icone-notificacao-n-lida {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 15px;
+    height: 15px;
+    background-color: red;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    font-weight: bold;
+  }
+
+  .marcar-lida-btn {
+    float: right;
+  }
+</style>
+<nav class="px-4 py-2.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 fixed left-0 right-0 top-0 z-50">
+  <div class="flex flex-wrap justify-between items-center">
+    <div class="flex justify-start items-center">
+
+      <a href="" class="flex items-center justify-between mr-4">
+        <img
+          src="{% static 'images/logoredonda.png' %}"
+          class="mr-3 h-8"
+          alt="Flowbite Logo"
+        />
+        <span
+          class="self-center text-2xl text-gray-900 font-semibold whitespace-nowrap dark:text-white"
+          >Portal Auto Equip</span
+        >
+      </a>
+    </div>
+    <div class="flex items-center lg:order-2">
+      <!-- Mudar cor do tema -->
+      <button
+        id="theme-toggle"
+        type="button"
+        class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5"
+      >
+        <svg
+          id="theme-toggle-dark-icon"
+          class="hidden w-5 h-5"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+          ></path>
+        </svg>
+        <svg
+          id="theme-toggle-light-icon"
+          class="hidden w-5 h-5"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+      </button>
+      <!-- Notifications -->
+      <button type="button" data-dropdown-toggle="notification-dropdown" class="relative p-2 mr-1 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
+        <span class="sr-only">View notifications</span>
+        <!-- Bell icon -->
+        <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
+        </svg>
+        {% if qnt_notificacoes %}
+          <div class="icone-notificacao-n-lida" id="qnt_notificacao_n_lida" value="{{ qnt_notificacoes }}">{{ qnt_notificacoes }}</div>
+        {% endif %}
+      </button>
+      <!-- Dropdown menu -->
+      <div class="hidden overflow-hidden z-50 my-4 max-w-sm text-base list-none bg-white rounded divide-y divide-gray-100 shadow-lg dark:divide-gray-600 dark:bg-gray-700 rounded-xl" id="notification-dropdown">
+        <div class="block py-2 px-4 text-base font-medium text-center text-gray-700 bg-gray-50 dark:bg-gray-600 dark:text-gray-300">Notifications</div>
+        {% if unread_notifications %}
+        {% for notificacao in unread_notifications %}
+          <div>
+            <a href="#" class="flex py-3 px-4 border-b hover:bg-gray-100 dark:hover:bg-gray-600 dark:border-gray-600">
+              <div class="pl-3 w-full">
+                <div class="text-gray-500 font-normal text-sm mb-1.5 dark:text-gray-400">
+                  Tarefa: {{ notificacao.tarefa }} </br></br> status: {{ notificacao.status }} </br></br> resultado: {{ notificacao.resultado }}
+                </div>
+                <button class="marcar-lida-btn" data-notificacao-id="{{ notificacao.id_notificacao }}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-check-square" viewBox="0 0 16 16">
+                  <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                  <path d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.235.235 0 0 1 .02-.022z"/>
+                </svg>
+            </button>
+              </div>
+            </a>
+          </div>
+          <hr/><hr/>
+        {% endfor %}
+        {% else %}
+          <div class="p-2">
+            Nenhuma notificação.
+          </div>
+        {% endif %}
+      </div>
+      <!-- Apps -->
+      <button type="button" data-dropdown-toggle="apps-dropdown" class="p-2 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
+        <span class="sr-only">View notifications</span>
+        <!-- Icon -->
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+        </svg>
+      </button>
+      <!-- Dropdown menu -->
+      <div class="hidden overflow-hidden z-50 my-4 max-w-sm text-base list-none bg-white rounded divide-y divide-gray-100 shadow-lg dark:bg-gray-700 dark:divide-gray-600 rounded-xl" id="apps-dropdown">
+        <div class="block py-2 px-4 text-base font-medium text-center text-gray-700 bg-gray-50 dark:bg-gray-600 dark:text-gray-300">
+          Apps
+        </div>
+        <div class="grid grid-cols-3 gap-4 p-4">
+
+        </div>
+      </div>
+      <!--Perfil -->
+      <button
+        type="button"
+        class="flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+        id="user-menu-button"
+        aria-expanded="false"
+        data-dropdown-toggle="dropdown"
+      >
+        <span class="sr-only">Open user menu</span>
+        <svg
+          class="mx-auto w-7 h-7 text-gray-400 bg-gray-100 group-hover:text-gray-500 dark:bg-gray-800 dark:text-gray-400 dark:group-hover:text-gray-400"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a9 9 0 0 0 5-1.5 4 4 0 0 0-4-3.5h-2a4 4 0 0 0-4 3.5 9 9 0 0 0 5 1.5Zm3-11a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+          />
+        </svg>
+      </button>
+      <!-- Dropdown menu -->
+      <div class="hidden z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 rounded-xl" id="dropdown">
+        <div class="py-3 px-4">
+          <span class="block text-sm font-semibold text-gray-900 dark:text-white"> {{ user.username }}</span>
+          <span class="block text-sm text-gray-900 truncate dark:text-white">{{ user.email }}</span>
+        </div>
+        <ul class="py-1 text-gray-700 dark:text-gray-300" aria-labelledby="dropdown">
+          <li>
+            
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  // Adicione este script para manipular o clique no botão e chamar a função Ajax
+  document.addEventListener('DOMContentLoaded', function () {
+    var buttons = document.querySelectorAll('.marcar-lida-btn');
+
+    buttons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        var notificacaoId = this.getAttribute('data-notificacao-id');
+        console.log(notificacaoId)
+
+        // Chama a função Ajax para marcar a notificação como lida
+        marcarNotificacaoLida(notificacaoId, button);
+      });
+    });
+
+    function marcarNotificacaoLida(notificacaoId, button) {
+      // Use Ajax para chamar sua view Django que marca a notificação como lida
+      // Você pode usar bibliotecas como jQuery ou o fetch API para isso
+      console.log(notificacaoId)
+      // Exemplo usando fetch API
+      fetch('/marcar_notificacao_lida/' + notificacaoId + '/')
+        .then(response => response.json())
+        .then(data => {
+          // Lógica para lidar com a resposta do servidor (pode ser uma mensagem de sucesso, erro, etc.)
+          var qntElement = document.getElementById('qnt_notificacao_n_lida');
+          var notificaoes_iniciais = parseFloat(qntElement.textContent)
+          console.log(notificaoes_iniciais);
+
+          if (data.message == "Notificação marcada como lida com sucesso.") {
+            var listItem = button.closest('li');
+            if (listItem) {
+              listItem.remove();
+              notificaoes_iniciais_finais = notificaoes_iniciais - 1;
+
+              var qntElement = document.getElementById('qnt_notificacao_n_lida');
+              if (qntElement) {
+                qntElement.textContent = notificaoes_iniciais_finais;
+          
+                if (notificaoes_iniciais_finais === 0) {
+                  qntElement.remove();
+                }
+              }
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao chamar a API:', error);
+        });
+    }
+
+  });
+</script>
+
+{% else %} {% endif %}
