@@ -1,0 +1,25 @@
+### Grafana:
+
+Entre no WSL do windows
+1 - sudo apt-get install -y software-properties-common;
+2 - wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -;
+3 - echo "deb https://packages.grafana.com/oss/deb stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list;
+4 - sudo apt-get update;
+5 - sudo apt-get install grafana;
+6 - sudo service grafana-server start
+
+Vai ficar rodando em http://localhost:3000/
+
+### Prometheus:
+
+1 - Download https://prometheus.io/download/;
+2 - Descompacte para a pasta desejada;
+3 - Edite o arquivo yml com suas configurações;
+4 - No diretório do prometheus execute .\alertmanager.exe --config.file=prometheus-alerts.yml;
+
+Vai ficar rodadando em http://localhost:9090/
+
+
+Configuração no grafana.
+Você vai entrar com a senha e user padrão (admin amdin), vai em conexoes e criar nova conexão. Procure por prometheus e na hora de colocar a url use o ip (pega no ipconfig), ao invés de localhost
+se não vai dar erro. Para acessar as métricas disponíveis você pode ir em http://localhost:9090/ clicar nos 3 pontinhos da barra de pesquisa e clicar em explore.
